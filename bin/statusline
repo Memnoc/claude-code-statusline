@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# Statusline config CLI — works from terminal and `! statusline` inside Claude
+
+CONF="$HOME/.claude/statusline.conf"
+
+_sl_set() {
+  local key="$1" val="$2" tmp="${CONF}.tmp"
+  grep -v "^${key}=" "$CONF" 2>/dev/null > "$tmp"
+  printf '%s="%s"\n' "$key" "$val" >> "$tmp"
+  mv "$tmp" "$CONF"
+}
+
+[[ ! -f "$CONF" ]] && printf 'THEME="dawn"\nSIZE="full"\n' > "$CONF"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --theme)
+      shift
+      _sl_set THEME "$1"
+      echo "statusline: theme → $1"
+      ;;
+    --config)
+      shift
+      _sl_set SIZE "$1"
+      echo "statusline: config → $1"
+      ;;
+    --show)
+      echo "=== ~/.claude/statusline.conf ==="
+      cat "$CONF" 2>/dev/null || echo "(empty — defaults active)"
+      ;;
+    --reset)
+      printf 'THEME="dawn"\nSIZE="full"\n' > "$CONF"
+      echo "statusline: reset to defaults (dawn / full)"
+      ;;
+    --help|-h)
+      echo "Usage: statusline [options]"
+      echo "  --theme <name>   dawn | moon | main"
+      echo "  --config <name>  full | small | minimal"
+      echo "  --show           print current config"
+      echo "  --reset          remove config (use defaults)"
+      ;;
+    *)
+      echo "statusline: unknown option '$1'. Try --help" >&2
+      exit 1
+      ;;
+  esac
+  shift
+done

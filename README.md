@@ -1,0 +1,121 @@
+# claude-code-statusline
+
+A configurable, Rose Pine-themed statusline for [Claude Code](https://claude.ai/code). Displays context window usage, rate limits, cache efficiency, session cost, git state, and more — rendered as a compact bar at the bottom of every session.
+
+---
+
+## What it shows
+
+```
+~/Code/myproject | ⎇ main !+ | claude-sonnet-4-5 | 🧠 ████░░░░░░ 42% | ⚡ ██░░░░░░░░ 17% ~3h58m | 💾 █████████░ 91% | ⏱ 1h12m | $1.93 | +246 -83
+```
+
+| Segment | Description |
+|---|---|
+| Directory | Working directory, abbreviated to last 3 components |
+| `⎇ branch` | Git branch + status flags (`!` modified, `+` staged, `?` untracked) |
+| Model | Active Claude model |
+| 🧠 Context | Context window usage bar — color shifts at 30%, 60%, 80% |
+| ⚡ Rate limit | Five-hour rate limit bar + time until reset (e.g. `~3h58m`) |
+| 💾 Cache | Lifetime cache-read ratio from `stats-cache.json` |
+| ⏱ Duration | Time elapsed since session start |
+| Cost | Session cost in USD (hidden at $0.00) |
+| Lines | Lines added/removed this session (hidden when both zero) |
+
+---
+
+## Requirements
+
+- Claude Code
+- `bash` 4+ (macOS ships bash 3; install via `brew install bash`)
+- `jq`
+- `git`
+
+---
+
+## Installation
+
+```bash
+git clone https://github.com/matteostara/claude-code-statusline
+cd claude-code-statusline
+bash install.sh
+```
+
+Then complete two manual steps.
+
+**1. Wire the renderer in `~/.claude/settings.json`:**
+
+```json
+{
+  "statusLine": {
+    "type": "command",
+    "command": "bash \"$HOME/.claude/statusline-command.sh\""
+  }
+}
+```
+
+**2. Add to `~/.zshrc` (prevents function/binary name collision):**
+
+```zsh
+statusline() { command statusline "$@"; }
+```
+
+Ensure `~/.local/bin` is in `PATH`, then restart Claude Code.
+
+---
+
+## Configuration
+
+Config file: `~/.claude/statusline.conf`
+
+```bash
+THEME="dawn"   # dawn | moon | main
+SIZE="full"    # full | small | minimal
+```
+
+Use the `statusline` CLI from any terminal — or from inside Claude Code with `! statusline`:
+
+```bash
+statusline --theme dawn       # Rose Pine Dawn (default)
+statusline --theme moon       # Rose Pine Moon
+statusline --theme main       # Rose Pine Main
+
+statusline --config full      # all segments, 10-block bars (default)
+statusline --config small     # all segments, 5-block bars
+statusline --config minimal   # directory + model + context only
+
+statusline --show             # print current config
+statusline --reset            # revert to defaults
+```
+
+### Themes
+
+Three [Rose Pine](https://rosepinetheme.com) variants:
+
+| Theme | Character |
+|---|---|
+| `dawn` | Warm, muted — good for light terminals |
+| `moon` | Cool blue-grey — good for dark terminals |
+| `main` | Neutral, balanced |
+
+### Size presets
+
+| Preset | Bars | Segments |
+|---|---|---|
+| `full` | 10 blocks | All |
+| `small` | 5 blocks | All |
+| `minimal` | 10 blocks | Directory, model, context only |
+
+---
+
+## How it works
+
+Claude Code supports a `statusLine.type: "command"` hook in `settings.json`. On every prompt, it pipes a JSON payload to your command and renders the stdout as the statusline. This script reads that payload for live session data (context usage, rate limits, cost, lines changed) and supplements it with data from local files (`stats-cache.json` for lifetime cache stats, `sessions/*.json` for session start time).
+
+Progress bars use Unicode block characters (`█░`) and ANSI 256-color codes, chosen from the Rose Pine palette based on the active theme.
+
+---
+
+## License
+
+MIT
