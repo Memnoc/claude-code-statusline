@@ -84,8 +84,12 @@ statusline --config full      # all segments, 10-block bars (default)
 statusline --config small     # all segments, 5-block bars
 statusline --config minimal   # directory + model + context only
 
-statusline --show             # print current config
-statusline --reset            # revert to defaults
+statusline --segment git:off      # hide a segment
+statusline --segment cost:on      # show a segment
+statusline --segments             # list all segment states
+
+statusline --show             # print current config file
+statusline --reset            # revert all settings to defaults
 ```
 
 ### Themes
@@ -105,6 +109,23 @@ Three [Rose Pine](https://rosepinetheme.com) variants:
 | `full` | 10 blocks | All |
 | `small` | 5 blocks | All |
 | `minimal` | 10 blocks | Directory, model, context only |
+
+### Segments
+
+Each segment can be shown or hidden independently. At least one must remain on.
+
+| Name | Description |
+|---|---|
+| `dir` | Working directory |
+| `git` | Git branch and status flags |
+| `model` | Active model name |
+| `ctx` | Context window usage bar |
+| `rate` | Rate limit bar with reset countdown |
+| `cache` | Lifetime cache efficiency bar |
+| `duration` | Time since session start |
+| `cost` | Session cost in USD |
+| `diff` | Lines added/removed this session |
+| `caveman` | Caveman mode badge (if plugin active) |
 
 ---
 

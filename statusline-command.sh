@@ -224,6 +224,18 @@ if [ -n "$cost" ]; then
   fi
 fi
 
+# --- Segment visibility ---
+[ "${SEG_DIR:-on}"      = "off" ] && seg_dir=""
+[ "${SEG_GIT:-on}"      = "off" ] && seg_git=""
+[ "${SEG_MODEL:-on}"    = "off" ] && seg_model=""
+[ "${SEG_CTX:-on}"      = "off" ] && seg_ctx=""
+[ "${SEG_RATE:-on}"     = "off" ] && seg_rate=""
+[ "${SEG_CACHE:-on}"    = "off" ] && seg_cache=""
+[ "${SEG_DURATION:-on}" = "off" ] && seg_duration=""
+[ "${SEG_COST:-on}"     = "off" ] && seg_cost=""
+[ "${SEG_DIFF:-on}"     = "off" ] && seg_diff=""
+[ "${SEG_CAVEMAN:-on}"  = "off" ] && seg_caveman=""
+
 # --- Segment layout by SIZE ---
 case "$SIZE" in
   small)

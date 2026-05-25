@@ -10,19 +10,91 @@ _sl_set() {
   mv "$tmp" "$CONF"
 }
 
+_sl_get() {
+  local key="$1"
+  grep "^${key}=" "$CONF" 2>/dev/null | sed 's/.*="\(.*\)"/\1/'
+}
+
+_count_on_after() {
+  local proposed_var="$1" proposed_val="$2"
+  local count=0
+  local all_segs="DIR GIT MODEL CTX RATE CACHE DURATION COST DIFF CAVEMAN"
+  for seg in $all_segs; do
+    local var="SEG_${seg}"
+    local val
+    if [ "$var" = "$proposed_var" ]; then
+      val="$proposed_val"
+    else
+      val=$(_sl_get "$var")
+      [ -z "$val" ] && val="on"
+    fi
+    [ "$val" = "on" ] && count=$((count + 1))
+  done
+  echo "$count"
+}
+
 [[ ! -f "$CONF" ]] && printf 'THEME="dawn"\nSIZE="full"\n' > "$CONF"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --theme)
       shift
+      case "$1" in
+        dawn|moon|main) ;;
+        *) echo "statusline: unknown theme '$1'. Valid: dawn | moon | main" >&2; exit 1 ;;
+      esac
       _sl_set THEME "$1"
       echo "statusline: theme → $1"
       ;;
     --config)
       shift
+      case "$1" in
+        full|small|minimal) ;;
+        *) echo "statusline: unknown config '$1'. Valid: full | small | minimal" >&2; exit 1 ;;
+      esac
       _sl_set SIZE "$1"
       echo "statusline: config → $1"
+      ;;
+    --segment)
+      shift
+      name="${1%%:*}"
+      state="${1##*:}"
+      case "$name" in
+        dir|git|model|ctx|rate|cache|duration|cost|diff|caveman) ;;
+        *) echo "statusline: unknown segment '$name'." >&2
+           echo "  Valid: dir git model ctx rate cache duration cost diff caveman" >&2
+           exit 1 ;;
+      esac
+      case "$state" in
+        on|off) ;;
+        *) echo "statusline: state must be 'on' or 'off', got '$state'" >&2; exit 1 ;;
+      esac
+      var="SEG_$(echo "$name" | tr '[:lower:]' '[:upper:]')"
+      if [ "$state" = "off" ]; then
+        remaining=$(_count_on_after "$var" "off")
+        if [ "$remaining" -lt 1 ]; then
+          echo "statusline: cannot disable '$name' — at least one segment must remain on." >&2
+          exit 1
+        fi
+      fi
+      if [ "$state" = "on" ]; then
+        # Remove the entry — "on" is the default, no need to store it
+        local_tmp="${CONF}.tmp"
+        grep -v "^${var}=" "$CONF" 2>/dev/null > "$local_tmp"
+        mv "$local_tmp" "$CONF"
+      else
+        _sl_set "$var" "$state"
+      fi
+      echo "statusline: segment $name → $state"
+      ;;
+    --segments)
+      echo "=== Segment visibility ==="
+      for seg in dir git model ctx rate cache duration cost diff caveman; do
+        var="SEG_$(echo "$seg" | tr '[:lower:]' '[:upper:]')"
+        val=$(_sl_get "$var")
+        [ -z "$val" ] && val="on"
+        printf "  %-10s %s\n" "$seg" "$val"
+      done
       ;;
     --show)
       echo "=== ~/.claude/statusline.conf ==="
@@ -30,14 +102,30 @@ while [[ $# -gt 0 ]]; do
       ;;
     --reset)
       printf 'THEME="dawn"\nSIZE="full"\n' > "$CONF"
-      echo "statusline: reset to defaults (dawn / full)"
+      echo "statusline: reset to defaults (dawn / full / all segments on)"
       ;;
     --help|-h)
-      echo "Usage: statusline [options]"
-      echo "  --theme <name>   dawn | moon | main"
-      echo "  --config <name>  full | small | minimal"
-      echo "  --show           print current config"
-      echo "  --reset          remove config (use defaults)"
+      cat <<'EOF'
+Usage: statusline [options]
+
+Theme:
+  --theme <name>            dawn | moon | main
+
+Size preset:
+  --config <name>           full | small | minimal
+
+Segments:
+  --segment <name>:<state>  Toggle a segment on or off
+  --segments                Show all segment states
+
+  Segment names: dir  git  model  ctx  rate  cache  duration  cost  diff  caveman
+  At least one segment must remain on.
+
+Other:
+  --show                    Print current config file
+  --reset                   Revert all settings to defaults
+  --help                    This message
+EOF
       ;;
     *)
       echo "statusline: unknown option '$1'. Try --help" >&2
