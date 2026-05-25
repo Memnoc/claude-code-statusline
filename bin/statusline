@@ -130,17 +130,31 @@ Usage: statusline [options]
 
 Theme:
   --theme <name>            Set active theme
-  --themes                  List all available themes
+  --themes                  List all available themes with mode and current marker
+
+  Examples:
+    statusline --themes                  # see all themes
+    statusline --theme nord              # switch to Nord
+    statusline --theme catppuccin-mocha  # switch to Catppuccin Mocha
 
 Size preset:
   --config <name>           full | small | minimal
 
+  Examples:
+    statusline --config small    # all segments, shorter bars
+    statusline --config minimal  # directory + model + context only
+
 Segments:
-  --segment <name>:<state>  Toggle a segment on or off
-  --segments                Show all segment states
+  --segment <name>:<state>  Show or hide a segment (on/off)
+  --segments                List all segments and their current state
 
   Segment names: dir  git  model  ctx  rate  cache  duration  cost  diff  caveman
   At least one segment must remain on.
+
+  Examples:
+    statusline --segments          # see all segment states
+    statusline --segment git:off   # hide git branch
+    statusline --segment cost:on   # show session cost
 
 Other:
   --show                    Print current config file

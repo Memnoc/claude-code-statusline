@@ -73,22 +73,34 @@ THEME="dawn"   # dawn | moon | main
 SIZE="full"    # full | small | minimal
 ```
 
-Use the `statusline` CLI from any terminal — or from inside Claude Code with `! statusline`:
+Use the `statusline` CLI from any terminal — or from inside Claude Code with `! statusline --help`.
 
+**Themes:**
 ```bash
-statusline --theme catppuccin-mocha   # set theme
-statusline --themes                   # list all themes with mode and current marker
+statusline --themes                   # list all themes (* marks active)
+statusline --theme nord               # switch to Nord
+statusline --theme catppuccin-mocha   # switch to Catppuccin Mocha
+statusline --theme dawn               # back to default
+```
 
+**Size presets:**
+```bash
 statusline --config full      # all segments, 10-block bars (default)
 statusline --config small     # all segments, 5-block bars
 statusline --config minimal   # directory + model + context only
+```
 
-statusline --segment git:off      # hide a segment
-statusline --segment cost:on      # show a segment
-statusline --segments             # list all segment states
+**Segments:**
+```bash
+statusline --segments          # list all segments and their state (* = off)
+statusline --segment git:off   # hide git branch
+statusline --segment cost:on   # show session cost
+```
 
-statusline --show             # print current config file
-statusline --reset            # revert all settings to defaults
+**Other:**
+```bash
+statusline --show    # print current config file
+statusline --reset   # revert all settings to defaults
 ```
 
 ### Themes
