@@ -157,7 +157,7 @@ fi
 
 # --- Caveman badge ---
 seg_caveman=""
-caveman_out=$(bash "/Users/matteostara/.claude/hooks/caveman-statusline.sh" 2>/dev/null)
+caveman_out=$(bash "$HOME/.claude/hooks/caveman-statusline.sh" 2>/dev/null)
 [ -n "$caveman_out" ] && seg_caveman="$caveman_out"
 
 # --- Session duration ---
