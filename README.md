@@ -76,9 +76,8 @@ SIZE="full"    # full | small | minimal
 Use the `statusline` CLI from any terminal — or from inside Claude Code with `! statusline`:
 
 ```bash
-statusline --theme dawn       # Rose Pine Dawn (default)
-statusline --theme moon       # Rose Pine Moon
-statusline --theme main       # Rose Pine Main
+statusline --theme catppuccin-mocha   # set theme
+statusline --themes                   # list all themes with mode and current marker
 
 statusline --config full      # all segments, 10-block bars (default)
 statusline --config small     # all segments, 5-block bars
@@ -94,13 +93,17 @@ statusline --reset            # revert all settings to defaults
 
 ### Themes
 
-Three [Rose Pine](https://rosepinetheme.com) variants:
-
-| Theme | Character |
-|---|---|
-| `dawn` | Warm, muted — good for light terminals |
-| `moon` | Cool blue-grey — good for dark terminals |
-| `main` | Neutral, balanced |
+| Theme | Mode | Palette |
+|---|---|---|
+| `dawn` | light | Rose Pine Dawn |
+| `moon` | dark | Rose Pine Moon |
+| `main` | dark | Rose Pine |
+| `catppuccin-latte` | light | Catppuccin Latte |
+| `catppuccin-mocha` | dark | Catppuccin Mocha |
+| `nord` | dark | Nord |
+| `gruvbox` | dark | Gruvbox Dark |
+| `tokyo-night` | dark | Tokyo Night |
+| `solarized` | light | Solarized Light |
 
 ### Size presets
 

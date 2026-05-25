@@ -40,11 +40,31 @@ while [[ $# -gt 0 ]]; do
     --theme)
       shift
       case "$1" in
-        dawn|moon|main) ;;
-        *) echo "statusline: unknown theme '$1'. Valid: dawn | moon | main" >&2; exit 1 ;;
+        dawn|moon|main|catppuccin-latte|catppuccin-mocha|nord|gruvbox|tokyo-night|solarized) ;;
+        *) echo "statusline: unknown theme '$1'. Run 'statusline --themes' for options." >&2; exit 1 ;;
       esac
       _sl_set THEME "$1"
       echo "statusline: theme → $1"
+      ;;
+    --themes)
+      current=$(_sl_get THEME)
+      [ -z "$current" ] && current="dawn"
+      printf "%-20s %-6s %s\n" "Theme" "Mode" "Description"
+      printf "%-20s %-6s %s\n" "-----" "----" "-----------"
+      _theme_row() {
+        local name="$1" mode="$2" desc="$3" marker=""
+        [ "$name" = "$current" ] && marker=" *"
+        printf "%-20s %-6s %s%s\n" "$name" "$mode" "$desc" "$marker"
+      }
+      _theme_row "dawn"             "light" "Rose Pine Dawn"
+      _theme_row "moon"             "dark"  "Rose Pine Moon"
+      _theme_row "main"             "dark"  "Rose Pine"
+      _theme_row "catppuccin-latte" "light" "Catppuccin Latte"
+      _theme_row "catppuccin-mocha" "dark"  "Catppuccin Mocha"
+      _theme_row "nord"             "dark"  "Nord"
+      _theme_row "gruvbox"          "dark"  "Gruvbox Dark"
+      _theme_row "tokyo-night"      "dark"  "Tokyo Night"
+      _theme_row "solarized"        "light" "Solarized Light"
       ;;
     --config)
       shift
@@ -109,7 +129,8 @@ while [[ $# -gt 0 ]]; do
 Usage: statusline [options]
 
 Theme:
-  --theme <name>            dawn | moon | main
+  --theme <name>            Set active theme
+  --themes                  List all available themes
 
 Size preset:
   --config <name>           full | small | minimal
